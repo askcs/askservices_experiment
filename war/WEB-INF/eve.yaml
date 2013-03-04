@@ -1,0 +1,38 @@
+# Eve configuration
+
+# environment specific settings
+environment:
+  Development:
+    agent_url: http://localhost:8080/eveagents/:class/:id/:resource
+    auth_google_servlet_url: http://localhost:8080/auth/google
+  Production:
+    agent_url: http://sven.ask-services.appspot.com/eveagents/:class/:id/:resource # TODO: production url
+    auth_google_servlet_url: http://sven.ask-services.appspot.com/auth/google
+
+# communication services
+transport_services:
+- class: XmppService
+  host: openid.ask-cs.com
+  port: 5222
+  service: openid.ask-cs.com
+
+# context settings
+# the context is used to persist the agents state.
+state:
+  class: FileStateFactory
+  path: .eveagents
+
+# scheduler settings
+scheduler:
+  class: RunnableScheduler
+  
+# create agents when running the first time
+bootstrap:
+  agents:
+    calcagent: com.almende.eve.agent.example.CalcAgent
+    merlin: com.askcs.askservices.agents.MerlinAgent
+    
+cape:
+  merlin:
+    username: merlin
+    password: merlin
