@@ -29,7 +29,6 @@ scheduler:
 # create agents when running the first time
 bootstrap:
   agents:
-    calcagent: com.almende.eve.agent.example.CalcAgent
     merlin: com.askcs.askservices.agents.MerlinAgent
     
 cape:

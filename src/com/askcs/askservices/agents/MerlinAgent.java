@@ -40,6 +40,7 @@ public class MerlinAgent extends CapeAgent {
 			}
 			
 			setAccount(username, password, resource);
+			connect();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

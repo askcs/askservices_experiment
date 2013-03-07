@@ -3,11 +3,61 @@ package com.askcs.askservices.agents;
 import java.util.logging.Logger;
 
 import com.almende.cape.agent.CapeClientAgent;
+import com.almende.cape.handler.NotificationHandler;
+import com.almende.eve.agent.annotation.Name;
+import com.almende.eve.rpc.jsonrpc.jackson.JOM;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class PersonalCapeAgent extends CapeClientAgent {
 	private static final Logger log = Logger
-			.getLogger(PersonalCapeAgent.class.toString());		
+			.getLogger(PersonalCapeAgent.class.toString());
+	
+	
+	@Override
+	public void init() {
+		super.init();
+		
+		try {
+			setNotificationHandler(new NotificationHandler() {
+				
+				@Override
+				public void onNotification(String message) {
+					// TODO Auto-generated method stub
+					System.out.println(message);
+					
+					// forward to phone?
+					try {
+						sendClientNotification(getId(), message);
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch(Exception e) {
+		}
+	}
+	
+	public void sendClientNotification(@Name("userId") String userId,@Name("message") String message) throws Exception {
+		if (userId == null) {
+			userId = getId();
+		}
+		String dataType = "client";
+		
+		// find an agent which can handle a dialog with the user
+		String notificationAgentUrl = findDataSource(userId, dataType);
+		if (notificationAgentUrl == null) {
+			throw new Exception(
+					"No data source found supporting a dialog with user " + userId);
+		}
+		
+		// send the notification
+		String method = "onNotification";
+		ObjectNode params = JOM.createObjectNode();
+		params.put("message", message);
+		send(notificationAgentUrl, method, params);
+	}
+	
 	@Override
 	public void setAccount(String username, String password, String resource)
 			throws Exception {
@@ -27,7 +77,8 @@ public class PersonalCapeAgent extends CapeClientAgent {
 		}		
 		
 		register("contacts");
-		register("state");
+		register("state");		
+		
 	}
 	
 	// [start] Extra getters and setters
